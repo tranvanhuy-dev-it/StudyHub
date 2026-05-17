@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.io.Resource;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookmarkResponse {
-    private boolean isBoookmark;
-    private int likeCount;
+public class DownloadResponse {
+    private Resource resource;
+    private String filename;
+    private String contentType;
 }

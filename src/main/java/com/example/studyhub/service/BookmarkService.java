@@ -1,14 +1,20 @@
 package com.example.studyhub.service;
 
-import com.example.studyhub.dto.request.AddBookmarkRequest;
-import com.example.studyhub.dto.request.AddLikeRequest;
 import com.example.studyhub.dto.response.BookmarkResponse;
-import com.example.studyhub.entities.Bookmark;
-
-import java.util.List;
+import com.example.studyhub.dto.response.BookmarksResponse;
+import com.example.studyhub.dto.response.PageResult;
 
 public interface BookmarkService {
-    BookmarkResponse add(AddBookmarkRequest request);
-    List<BookmarkResponse> getAll();
+
+    BookmarkResponse toggleBookmark(int userId, int documentId);
+
+    PageResult<BookmarksResponse> getByUserId(int userId, int page, int pageSize);
+
+    long getBookmarkCount(int documentId);
+
+    boolean isBookmarked(int userId, int documentId);
+
     void delete(Integer id);
+
+    boolean isBookmark(int userId, int documentId);
 }

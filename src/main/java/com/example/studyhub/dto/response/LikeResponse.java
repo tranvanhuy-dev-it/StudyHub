@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookmarkResponse {
-    private boolean isBoookmark;
+public class LikeResponse {
+    private boolean isLiked;
     private int likeCount;
 }

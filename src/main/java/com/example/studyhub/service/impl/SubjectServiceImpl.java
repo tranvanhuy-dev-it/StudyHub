@@ -9,6 +9,10 @@ import com.example.studyhub.exception.NotFoundException;
 import com.example.studyhub.repository.SchoolRepository;
 import com.example.studyhub.repository.SubjectRepository;
 import com.example.studyhub.service.SubjectService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,14 +29,32 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<SubjectResponse> getSubjects(Integer schoolId) {
-        List<Subject> subjects =  subjectRepository.findAll();
-
-        return subjects.stream()
+        Sort sort = Sort.by(Sort.Direction.ASC, "subjectName");
+        return subjectRepository.findAll(sort).stream()
                 .filter(subject -> schoolId == null ||
                         (subject.getSchool() != null &&
                                 subject.getSchool().getSchoolId().equals(schoolId)))
                 .map(this::mapToSubjectResponse)
                 .toList();
+    }
+
+    @Override
+    public Page<SubjectResponse> getSubjects(Integer schoolId, int page, int pageSize, String search) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.ASC, "subjectName"));
+
+        Page<Subject> subjectPage;
+
+        if (schoolId != null && search != null && !search.isBlank()) {
+            subjectPage = subjectRepository.findBySchool_SchoolIdAndSubjectNameContainingIgnoreCase(schoolId, search, pageable);
+        } else if (schoolId != null) {
+            subjectPage = subjectRepository.findBySchool_SchoolId(schoolId, pageable);
+        } else if (search != null && !search.isBlank()) {
+            subjectPage = subjectRepository.findBySubjectNameContainingIgnoreCase(search, pageable);
+        } else {
+            subjectPage = subjectRepository.findAll(pageable);
+        }
+
+        return subjectPage.map(this::mapToSubjectResponse);
     }
 
     @Override

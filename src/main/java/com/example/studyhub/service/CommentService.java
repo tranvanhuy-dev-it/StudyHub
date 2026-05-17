@@ -2,15 +2,16 @@ package com.example.studyhub.service;
 
 import com.example.studyhub.dto.request.AddCommentRequest;
 import com.example.studyhub.dto.response.CommentResponse;
+import com.example.studyhub.dto.response.PageResult;
 import com.example.studyhub.entities.Comment;
 import java.util.List;
 import java.util.Optional;
 
 public interface CommentService {
 
-    CommentResponse createComment(AddCommentRequest comment);
+    CommentResponse createComment(int userId, int documentId, String content);
 
-    List<CommentResponse> getAllComments(int documentId, int page, int pageSize);
+    PageResult<CommentResponse> getAllComments(int documentId, int page, int pageSize);
 
     Optional<CommentResponse> getCommentById(Integer id);
 

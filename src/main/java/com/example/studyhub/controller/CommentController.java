@@ -1,13 +1,14 @@
 package com.example.studyhub.controller;
 
+import com.example.studyhub.annotation.CurrentUserId;
 import com.example.studyhub.dto.request.AddCommentRequest;
 import com.example.studyhub.dto.response.CommentResponse;
+import com.example.studyhub.dto.response.PageResult;
 import com.example.studyhub.entities.Comment;
 import com.example.studyhub.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -20,13 +21,16 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentResponse> createComment(@RequestBody AddCommentRequest comment) {
-        return ResponseEntity.ok(commentService.createComment(comment));
+    public ResponseEntity<CommentResponse> createComment(
+            @CurrentUserId Integer userId,
+            @RequestBody AddCommentRequest comment
+    ) {
+        return ResponseEntity.ok(commentService.createComment(userId, comment.getDocumentId(), comment.getContent()));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CommentResponse>> getAllComments(
-            @RequestParam(required = true) int documentId,
+    @GetMapping("/document/{documentId}")
+    public ResponseEntity<PageResult<CommentResponse>> getAllComments(
+            @RequestParam int documentId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int pageSize
     ) {

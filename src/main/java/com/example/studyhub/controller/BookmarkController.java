@@ -1,12 +1,10 @@
 package com.example.studyhub.controller;
 
-import com.example.studyhub.dto.request.AddBookmarkRequest;
-import com.example.studyhub.dto.response.BookmarkResponse;
-import com.example.studyhub.entities.Bookmark;
+import com.example.studyhub.annotation.CurrentUserId;
+import com.example.studyhub.dto.response.BookmarksResponse;
+import com.example.studyhub.dto.response.PageResult;
 import com.example.studyhub.service.BookmarkService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -18,18 +16,12 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    @PostMapping
-    public BookmarkResponse add(@RequestBody AddBookmarkRequest request) {
-        return bookmarkService.add(request);
-    }
-
-    @GetMapping
-    public List<BookmarkResponse> getAll() {
-        return bookmarkService.getAll();
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
-        bookmarkService.delete(id);
+    @GetMapping("/me")
+    public PageResult<BookmarksResponse> getAll(
+            @CurrentUserId Integer userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return bookmarkService.getByUserId(userId, page, pageSize);
     }
 }

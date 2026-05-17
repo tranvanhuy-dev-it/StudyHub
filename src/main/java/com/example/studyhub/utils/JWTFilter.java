@@ -45,6 +45,13 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String email = jwtService.extractEmail(token);
+        Integer userId = jwtService.extractUserId(token); // thêm dòng này
+//
+//        System.out.println(">>> FILTER - email: " + email);
+//        System.out.println(">>> FILTER - userId: " + userId); // xem userId có null không
+//
+//        // Set vào attribute để resolver dùng lại, không cần parse 2 lần
+        request.setAttribute("userId", userId);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
@@ -53,9 +60,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         List.of()
                 );
 
-        SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
-
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 
@@ -68,6 +73,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 path.startsWith("/webjars/") ||     // ← thêm dòng này
                 path.equals("/swagger-ui.html") ||
                 path.equals("/api/auth/login") ||
-                path.equals("/api/auth/register");
+                path.equals("/api/auth/register") ||
+                path.startsWith("/file/") ||        // ✅ THÊM DÒNG NÀY
+                path.startsWith("/uploads/") ||     // ✅ THÊM DÒNG NÀY
+                path.startsWith("/api/files/");
     }
 }

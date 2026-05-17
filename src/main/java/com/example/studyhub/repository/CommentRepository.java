@@ -1,8 +1,14 @@
 package com.example.studyhub.repository;
 
+import com.example.studyhub.entities.Bookmark;
 import com.example.studyhub.entities.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
+import java.util.List;
 
+public interface CommentRepository extends JpaRepository<Comment, Integer> {
+    long countByDocument_DocumentId(int documentId);
+    Page<Comment> findByDocument_DocumentId(int documentId, Pageable pageable );
 }

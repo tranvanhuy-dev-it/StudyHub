@@ -1,6 +1,7 @@
 package com.example.studyhub.service.impl;
 
 import com.example.studyhub.dto.request.AddLikeRequest;
+import com.example.studyhub.dto.response.LikeResponse;
 import com.example.studyhub.entities.Document;
 import com.example.studyhub.entities.Like;
 import com.example.studyhub.entities.User;
@@ -8,6 +9,7 @@ import com.example.studyhub.repository.DocumentRepository;
 import com.example.studyhub.repository.LikeRepository;
 import com.example.studyhub.repository.UserRepository;
 import com.example.studyhub.service.LikeService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,27 +29,39 @@ public class LikeServiceImpl implements LikeService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
-    public Like create(AddLikeRequest request) {
-        Document doc = documentRepository.findById(request.getDocumentId())
+    public LikeResponse toggleLike(int userId, int documentId) {
+        boolean isLiked = likeRepository.existsByUser_UserIdAndDocument_DocumentId(userId, documentId);
+
+        Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Like like = new Like();
-        like.setCreatedAt(LocalDateTime.now());
-        like.setDocument(doc);
-        like.setUser(user);
-        return likeRepository.save(like);
+        if (isLiked) {
+            likeRepository.deleteByUser_UserIdAndDocument_DocumentId(userId, documentId);
+            document.setLikeCount(document.getLikeCount() - 1);
+            documentRepository.save(document);
+
+            return new LikeResponse(false, document.getLikeCount());
+        } else {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Like like = new Like();
+            like.setCreatedAt(LocalDateTime.now());
+            like.setDocument(document);
+            like.setUser(user);
+            likeRepository.save(like);
+
+            document.setLikeCount(document.getLikeCount() + 1);
+            documentRepository.save(document);
+
+            return new LikeResponse(true, document.getLikeCount());
+        }
     }
 
     @Override
-    public List<Like> getAll() {
-        return likeRepository.findAll();
-    }
-
-    @Override
-    public void delete(Integer id) {
-        likeRepository.deleteById(id);
+    public boolean isLike(int userId, int documentId) {
+        return likeRepository.existsByUser_UserIdAndDocument_DocumentId(userId, documentId);
     }
 }

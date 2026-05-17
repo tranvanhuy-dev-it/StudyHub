@@ -6,6 +6,7 @@ import com.example.studyhub.exception.AlreadyExistsException;
 import com.example.studyhub.exception.NotFoundException;
 import com.example.studyhub.repository.SchoolRepository;
 import com.example.studyhub.service.SchoolService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public List<School> getSchools() {
-        return schoolRepository.findAll();
+        return schoolRepository.findAll(Sort.by(Sort.Direction.ASC, "schoolName"));
     }
 
     @Override

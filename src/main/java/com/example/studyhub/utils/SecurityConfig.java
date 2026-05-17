@@ -2,13 +2,16 @@ package com.example.studyhub.utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,10 +20,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Kích hoạt để dùng được @PreAuthorize("hasRole('Admin')")
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JWTFilter jwtFilter; // Bạn cần hoàn thiện lớp này
+    private final JWTFilter jwtFilter;
 
     public SecurityConfig(JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
@@ -32,31 +35,45 @@ public class SecurityConfig {
             "/api/schools/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/api/documents/**" // Có thể cho phép xem tài liệu mà không cần login
+            "/uploads/**",
+            "/api/files/**",
+            "/file/**",
+            "/thumbnails/**",
+            "/api/schools/**",
+            "/api/subjects/**"
     };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Thêm CORS cho Vite
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // THÊM CẤU HÌNH NÀY ĐỂ XỬ LÝ X-FRAME-OPTIONS
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(WHITE_LIST).permitAll() // Các đường dẫn không cần xác thực
-                        .anyRequest().authenticated() // Tất cả các request khác phải đăng nhập
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/documents/**").permitAll()
+                        .requestMatchers("/file/**", "/uploads/**", "/files/**", "/thumbnails/**").permitAll()
+                        .requestMatchers(
+                                "/api/schools/**",
+                                "/api/subjects/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Chèn Filter kiểm tra Token
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Cấu hình CORS để Frontend (Vite) gọi được API
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Port của React/Vite
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

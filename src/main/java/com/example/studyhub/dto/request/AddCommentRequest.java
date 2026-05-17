@@ -12,5 +12,4 @@ import lombok.Setter;
 public class AddCommentRequest {
     private String content;
     private Integer documentId;
-    private Integer userId;
 }

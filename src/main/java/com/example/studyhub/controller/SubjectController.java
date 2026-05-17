@@ -20,7 +20,15 @@ public class SubjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SubjectResponse>> getAllSubjects(@RequestParam(required = false) Integer schoolId) {
+    public ResponseEntity<?> getAllSubjects(
+            @RequestParam(required = false) Integer schoolId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String search
+    ) {
+        if (page != null && pageSize != null) {
+            return ResponseEntity.ok(subjectService.getSubjects(schoolId, page, pageSize, search));
+        }
         return ResponseEntity.ok(subjectService.getSubjects(schoolId));
     }
 

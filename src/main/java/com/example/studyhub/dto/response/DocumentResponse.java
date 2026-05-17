@@ -18,6 +18,8 @@ public class DocumentResponse {
 
     private String fileUrl;
 
+    private String thumbnailUrl;
+
     private String fileType;
 
     private Long fileSize;

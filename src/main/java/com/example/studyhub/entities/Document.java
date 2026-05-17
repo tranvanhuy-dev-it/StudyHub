@@ -42,6 +42,12 @@ public class Document {
     @Column(name = "ViewCount")
     private Integer viewCount = 0;
 
+    @Column(name = "LikeCount")
+    private Integer likeCount = 0;
+
+    @Column(name = "BookmarkCount")
+    private Integer bookmarkCount = 0;
+
     @Column(name = "Status")
     private String status = "PENDING";
 

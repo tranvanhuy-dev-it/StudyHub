@@ -7,6 +7,7 @@ import com.example.studyhub.entities.School;
 import com.example.studyhub.entities.User;
 import com.example.studyhub.exception.AlreadyExistsException;
 import com.example.studyhub.exception.NotFoundException;
+import com.example.studyhub.exception.WrongPasswordException;
 import com.example.studyhub.repository.SchoolRepository;
 import com.example.studyhub.repository.UserRepository;
 import com.example.studyhub.service.UserService;
@@ -33,10 +34,14 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
 
         return users.stream()
+                .filter(user -> schoolId == 0 ||
+                        (user.getSchool() != null &&
+                                user.getSchool().getSchoolId() == schoolId))
+                .skip((long) (page - 1) * pageSize)
+                .limit(pageSize)
                 .map(this::mapToUserResponse)
                 .toList();
     }
-
     @Override
     public UserDetailResponse getById(int id) {
         User user = userRepository.findById(id)
@@ -103,6 +108,31 @@ public class UserServiceImpl implements UserService {
         User saved = userRepository.save(user);
 
         return mapToUserResponse(saved);
+    }
+
+    @Override
+    public boolean changePassword(int userId, String newPassword, String currentPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new WrongPasswordException("Current password is incorrect");
+        }
+
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("New password must be at least 6 characters");
+        }
+
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw new RuntimeException("New password must be different from current password");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+
+        user.setPasswordHash(encodedNewPassword);
+        userRepository.save(user);
+
+        return true;
     }
 
     private UserResponse mapToUserResponse(User user) {

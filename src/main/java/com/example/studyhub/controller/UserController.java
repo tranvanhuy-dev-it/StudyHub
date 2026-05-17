@@ -1,15 +1,19 @@
 package com.example.studyhub.controller;
 
+import com.example.studyhub.annotation.CurrentUserId;
 import com.example.studyhub.dto.request.AddUserRequest;
+import com.example.studyhub.dto.request.ChangePasswordRequest;
 import com.example.studyhub.dto.response.UserDetailResponse;
 import com.example.studyhub.dto.response.UserResponse;
 import com.example.studyhub.entities.User;
 import com.example.studyhub.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -50,5 +54,23 @@ public class UserController {
     @PutMapping
     public ResponseEntity<UserResponse> updateUser(@RequestBody User request) {
         return ResponseEntity.ok(userService.update(request));
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<?> changePassword(
+            @CurrentUserId Integer userId,
+            @RequestBody ChangePasswordRequest request
+    ) {
+        boolean success = userService.changePassword(
+                userId,
+                request.getNewPassword(),
+                request.getCurrentPassword()
+        );
+
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to change password"));
+        }
     }
 }

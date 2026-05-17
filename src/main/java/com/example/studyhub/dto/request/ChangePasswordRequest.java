@@ -1,7 +1,5 @@
 package com.example.studyhub.dto.request;
 
-import com.example.studyhub.entities.Document;
-import com.example.studyhub.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddLikeRequest {
-    private int documentId;
+public class ChangePasswordRequest {
+    private String newPassword;
+
+    private String currentPassword;
 }

@@ -39,13 +39,15 @@ public class DocumentDetailResponse {
 
     private Integer likeCount;
 
+    private Integer bookmarkCount;
+
     private int userId;
 
     private String userName;
 
-    private int SubjectId;
+    private int subjectId;
 
-    private String SubjectName;
+    private String subjectName;
 
     private int schoolId;
 
