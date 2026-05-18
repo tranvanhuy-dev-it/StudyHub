@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,40 +28,55 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    private static final String[] WHITE_LIST = {
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/schools/**",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/uploads/**",
-            "/api/files/**",
-            "/file/**",
-            "/thumbnails/**",
-            "/api/schools/**",
-            "/api/subjects/**"
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // THÊM CẤU HÌNH NÀY ĐỂ XỬ LÝ X-FRAME-OPTIONS
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(WHITE_LIST).permitAll()
+                        // ✅ CORS preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // ✅ Auth
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/register"
+                        ).permitAll()
+
+                        // ✅ POST /api/contact công khai
+                        .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
+
+                        // ✅ Admin contact cần token
+                        .requestMatchers("/api/contact/admin/**").authenticated()
+
+                        // ✅ GET /api/documents public — không cần đăng nhập
                         .requestMatchers(HttpMethod.GET, "/api/documents/**").permitAll()
-                        .requestMatchers("/file/**", "/uploads/**", "/files/**", "/thumbnails/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/documents/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/documents/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/documents/**").authenticated()
+
+                        .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
+
+                        // ✅ Các public endpoints khác
                         .requestMatchers(
                                 "/api/schools/**",
-                                "/api/subjects/**"
+                                "/api/subjects/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/uploads/**",
+                                "/api/files/**",
+                                "/file/**",
+                                "/thumbnails/**"
                         ).permitAll()
+
+                        // Còn lại cần xác thực
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -75,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

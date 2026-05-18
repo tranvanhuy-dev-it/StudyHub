@@ -1,5 +1,6 @@
 package com.example.studyhub.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookmarkResponse {
+    @JsonProperty("bookmarked")
     private boolean isBoookmark;
-    private int likeCount;
+
+    @JsonProperty("count")
+    private int bookmarkCount;
 }

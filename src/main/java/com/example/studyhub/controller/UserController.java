@@ -29,6 +29,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(id));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDetailResponse> getMe(@CurrentUserId Integer userId) {
+        return ResponseEntity.ok(userService.getById(userId));
+    }
+
     @GetMapping
     public ResponseEntity<List<UserResponse>> getUsers(
             @RequestParam(required = false) int schoolId,

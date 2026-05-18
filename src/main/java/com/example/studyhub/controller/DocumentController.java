@@ -85,25 +85,6 @@ public class DocumentController {
         }
     }
 
-    @PostMapping("/{documentId}/like")
-    public ResponseEntity<LikeResponse> toggleLike(
-            @CurrentUserId Integer userId,
-            @PathVariable int documentId
-    ) {
-//        Integer userId = (Integer) request.getAttribute("userId");
-        LikeResponse like = likeService.toggleLike(userId, documentId);
-        return ResponseEntity.ok(like);
-    }
-
-    @PostMapping("/{documentId}/bookmark")
-    public ResponseEntity<?> toggleBookmark(
-            @CurrentUserId Integer userId,
-            @PathVariable int documentId
-    ) {
-        bookmarkService.toggleBookmark(userId, documentId);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> download(@PathVariable Integer id) {
         DownloadResponse result = documentService.download(id);
@@ -120,31 +101,5 @@ public class DocumentController {
                         "attachment; filename=\"" + result.getFilename() + "\"")
                 .contentType(mediaType)
                 .body(result.getResource());
-    }
-
-    @GetMapping("/{documentId}/like/status")
-    public ResponseEntity<Boolean> isLiked(
-            @PathVariable int documentId,
-            @CurrentUserId Integer userId) {
-
-        if (userId == null) {
-            return ResponseEntity.ok(false);
-        }
-
-        boolean isLiked = likeService.isLike(userId, documentId);
-        return ResponseEntity.ok(isLiked);
-    }
-
-    @GetMapping("/{documentId}/bookmark/status")
-    public ResponseEntity<Boolean> isBookmarked(
-            @PathVariable int documentId,
-            @CurrentUserId Integer userId) {
-
-        if (userId == null) {
-            return ResponseEntity.ok(false);
-        }
-
-        boolean isBookmarked = bookmarkService.isBookmark(userId, documentId);
-        return ResponseEntity.ok(isBookmarked);
     }
 }

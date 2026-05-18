@@ -10,7 +10,7 @@ public interface BookmarkService {
 
     PageResult<BookmarksResponse> getByUserId(int userId, int page, int pageSize);
 
-    long getBookmarkCount(int documentId);
+    int getBookmarkCount(int documentId);
 
     boolean isBookmarked(int userId, int documentId);
 

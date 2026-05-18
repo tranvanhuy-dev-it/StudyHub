@@ -15,7 +15,7 @@ public interface CommentService {
 
     Optional<CommentResponse> getCommentById(Integer id);
 
-    CommentResponse updateComment(Integer id, Comment comment);
+    CommentResponse updateComment(Integer id, String comment);
 
     void deleteComment(Integer id);
 }

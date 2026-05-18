@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-
 import java.io.IOException;
 
 @Component
@@ -45,20 +44,12 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String email = jwtService.extractEmail(token);
-        Integer userId = jwtService.extractUserId(token); // thêm dòng này
-//
-//        System.out.println(">>> FILTER - email: " + email);
-//        System.out.println(">>> FILTER - userId: " + userId); // xem userId có null không
-//
-//        // Set vào attribute để resolver dùng lại, không cần parse 2 lần
+        Integer userId = jwtService.extractUserId(token);
+
         request.setAttribute("userId", userId);
 
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        email,
-                        null,
-                        List.of()
-                );
+                new UsernamePasswordAuthenticationToken(email, null, List.of());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
@@ -67,15 +58,55 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return  path.equals("/") ||
-                path.startsWith("/swagger-ui") ||
+        String method = request.getMethod();
+
+        if (method.equalsIgnoreCase("OPTIONS")) {
+            return true;
+        }
+
+        if (path.startsWith("/swagger-ui") ||
                 path.startsWith("/v3/api-docs") ||
-                path.startsWith("/webjars/") ||     // ← thêm dòng này
-                path.equals("/swagger-ui.html") ||
-                path.equals("/api/auth/login") ||
-                path.equals("/api/auth/register") ||
-                path.startsWith("/file/") ||        // ✅ THÊM DÒNG NÀY
-                path.startsWith("/uploads/") ||     // ✅ THÊM DÒNG NÀY
-                path.startsWith("/api/files/");
+                path.startsWith("/webjars/") ||
+                path.equals("/swagger-ui.html")) {
+            return true;
+        }
+
+        if (path.equals("/api/auth/login") ||
+                path.equals("/api/auth/register")) {
+            return true;
+        }
+
+        if (path.startsWith("/file/") ||
+                path.startsWith("/uploads/") ||
+                path.startsWith("/api/files/") ||
+                path.startsWith("/thumbnails/")) {
+            return true;
+        }
+
+        if (path.equals("/api/contact") && method.equalsIgnoreCase("POST")) {
+            return true;
+        }
+
+        if (path.startsWith("/api/schools/") || path.equals("/api/schools")) {
+            return true;
+        }
+        if (path.startsWith("/api/subjects/") || path.equals("/api/subjects")) {
+            return true;
+        }
+
+        if (path.equals("/api/documents") && method.equalsIgnoreCase("GET")) {
+            return true;
+        }
+
+        if (path.equals("/api/comment") && method.equalsIgnoreCase("GET")) {
+            return true;
+        }
+
+        // ✅ Thêm các public endpoint khác ở đây nếu cần
+        // if (path.startsWith("/api/documents/") || path.equals("/api/documents")) {
+        //     return true;
+        // }
+
+        return false;
     }
 }

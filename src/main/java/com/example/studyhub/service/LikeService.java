@@ -9,4 +9,5 @@ import java.util.List;
 public interface LikeService {
     LikeResponse toggleLike(int userId, int documentId);
     boolean isLike(int userId, int documentId);
+    int getCountByDocumentId(int documentId);
 }

@@ -84,13 +84,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse updateComment(Integer id, Comment comment) {
+    public CommentResponse updateComment(Integer id, String comment) {
         return commentRepository.findById(id)
                 .map(existing -> {
-                    existing.setContent(comment.getContent());
-                    existing.setCreatedAt(comment.getCreatedAt());
-                    existing.setDocument(comment.getDocument());
-                    existing.setUser(comment.getUser());
+                    existing.setContent(comment);
                     return mapToCommentResponse(commentRepository.save(existing));
                 })
                 .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));

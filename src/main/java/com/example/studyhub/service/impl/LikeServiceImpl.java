@@ -64,4 +64,9 @@ public class LikeServiceImpl implements LikeService {
     public boolean isLike(int userId, int documentId) {
         return likeRepository.existsByUser_UserIdAndDocument_DocumentId(userId, documentId);
     }
+
+    @Override
+    public int getCountByDocumentId(int documentId) {
+        return likeRepository.countByDocument_DocumentId(documentId);
+    }
 }

@@ -2,6 +2,7 @@ package com.example.studyhub.controller;
 
 import com.example.studyhub.annotation.CurrentUserId;
 import com.example.studyhub.dto.request.AddCommentRequest;
+import com.example.studyhub.dto.request.UpdateCommentRequest;
 import com.example.studyhub.dto.response.CommentResponse;
 import com.example.studyhub.dto.response.PageResult;
 import com.example.studyhub.entities.Comment;
@@ -9,6 +10,8 @@ import com.example.studyhub.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -30,7 +33,7 @@ public class CommentController {
 
     @GetMapping("/document/{documentId}")
     public ResponseEntity<PageResult<CommentResponse>> getAllComments(
-            @RequestParam int documentId,
+            @PathVariable  int documentId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int pageSize
     ) {
@@ -47,8 +50,8 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentResponse> updateComment(
             @PathVariable Integer id,
-            @RequestBody Comment comment) {
-        return ResponseEntity.ok(commentService.updateComment(id, comment));
+            @RequestBody UpdateCommentRequest request) {
+        return ResponseEntity.ok(commentService.updateComment(id, request.getContent()));
     }
 
     @DeleteMapping("/{id}")

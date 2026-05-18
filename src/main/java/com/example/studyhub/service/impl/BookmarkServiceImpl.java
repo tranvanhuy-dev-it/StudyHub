@@ -68,6 +68,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         }
     }
 
+    @Transactional
     @Override
     public PageResult<BookmarksResponse> getByUserId(int userId, int page, int pageSize) {
 
@@ -94,7 +95,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public long getBookmarkCount(int documentId) {
+    public int getBookmarkCount(int documentId) {
         return bookmarkRepository.countByDocument_DocumentId(documentId);
     }
 
