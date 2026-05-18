@@ -51,7 +51,7 @@ Hệ thống hỗ trợ quản lý tài liệu, người dùng, môn học, trư
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/your-username/studyhub-be.git
+git clone https://github.com/your-username/studyhub-be.git](https://github.com/tranvanhuy-dev-it/StudyHub.git
 ```
 
 ---
