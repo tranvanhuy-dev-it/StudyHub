@@ -5,7 +5,7 @@ Hệ thống hỗ trợ quản lý tài liệu, người dùng, môn học, trư
 
 ---
 
-## 🚀 Technologies
+## Technologies
 
 - Java 17
 - Spring Boot
@@ -18,15 +18,15 @@ Hệ thống hỗ trợ quản lý tài liệu, người dùng, môn học, trư
 
 ---
 
-## 📂 Features
+## Features
 
-### 👤 Authentication & User
+### Authentication & User
 - Register
 - Login with JWT
 - Role-based authorization
 - User profile management
 
-### 📚 Document
+### Document
 - Upload documents
 - Download documents
 - Search documents
@@ -34,19 +34,19 @@ Hệ thống hỗ trợ quản lý tài liệu, người dùng, môn học, trư
 - Bookmark documents
 - Count downloads and views
 
-### 🏫 School & Subject
+### School & Subject
 - Manage schools
 - Manage subjects
 - Link documents to schools and subjects
 
-### 🛡️ Admin
+### Admin
 - Manage users
 - Manage documents
 - Handle reported documents
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### 1. Clone repository
 
@@ -95,7 +95,7 @@ Or run directly using IntelliJ IDEA / Eclipse.
 
 ---
 
-## 📌 API Base URL
+## API Base URL
 
 ```text
 http://localhost:8080/api
@@ -103,7 +103,7 @@ http://localhost:8080/api
 
 ---
 
-## 📖 Example Endpoints
+## Example Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -115,7 +115,7 @@ http://localhost:8080/api
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 src
@@ -135,7 +135,7 @@ src
 
 ---
 
-## 🔐 JWT Authentication
+## JWT Authentication
 
 After login success, API returns token:
 
@@ -153,7 +153,7 @@ Authorization: Bearer your_jwt_token
 
 ---
 
-## 🌱 Future Improvements
+## Future Improvements
 
 - Google OAuth2 Login
 - AI document recommendation
@@ -164,6 +164,6 @@ Authorization: Bearer your_jwt_token
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Developed by Tran Van Huy
