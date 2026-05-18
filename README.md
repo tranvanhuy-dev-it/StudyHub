@@ -166,4 +166,4 @@ Authorization: Bearer your_jwt_token
 
 ## 👨‍💻 Author
 
-Developed by Huy
+Developed by Tran Van Huy
